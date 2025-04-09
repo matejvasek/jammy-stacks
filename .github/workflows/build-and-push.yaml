@@ -27,6 +27,7 @@ jobs:
           echo '{"insecure-registries" : "localhost:5000" }'  | \
             sudo tee /etc/docker/daemon.json
           mkdir -p ~/.config/containers/
+          touch "~/.config/containers/registries.conf"
           echo '\n[[registry]]\nlocation = "localhost:5000"\ninsecure = true\n' >> \
             "~/.config/containers/registries.conf"
           skopeo login ghcr.io -u gh-action -p "$GITHUB_TOKEN"
