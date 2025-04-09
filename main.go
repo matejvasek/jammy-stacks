@@ -15,8 +15,8 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/google/go-containerregistry/pkg/authn"
+	ghAuth "github.com/google/go-containerregistry/pkg/authn/github"
 	"github.com/google/go-containerregistry/pkg/name"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/layout"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-github/v68/github"
@@ -158,6 +158,10 @@ func buildStack(ctx context.Context, variant string) error {
 }
 
 func mergeOciArchives(ociArchiveA, ociArchiveB, destDir string) error {
+	extract := func(archivePath string) error {
+		return nil
+	}
+	_ = extract("")
 	return nil
 }
 
@@ -178,7 +182,7 @@ func downloadSource(ctx context.Context, url string) (string, error) {
 		return "", fmt.Errorf("cannot create temp dir for source code: %w", err)
 	}
 	cmd := exec.CommandContext(ctx, "tar",
-		"vxzf", "-",
+		"xzf", "-",
 		"-C", d,
 		"--strip-components=1")
 	cmd.Stdin = resp.Body
@@ -249,15 +253,11 @@ func pushOciDir(ctx context.Context, ref, ociDirPath string) error {
 		return err
 	}
 
-	ch := make(chan v1.Update, 10)
-	go func() {
-		for u := range ch {
-			fmt.Println(u)
-		}
-	}()
 	return remote.WriteIndex(r, imageIndex,
-		remote.WithAuthFromKeychain(authn.DefaultKeychain),
+		remote.WithAuthFromKeychain(DefaultKeychain),
 		remote.WithContext(ctx),
-		remote.WithProgress(ch))
+	)
 
 }
+
+var DefaultKeychain = authn.NewMultiKeychain(ghAuth.Keychain, authn.DefaultKeychain)

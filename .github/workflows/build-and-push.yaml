@@ -24,4 +24,5 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           skopeo --version || true
+          cat /etc/docker/daemon.json || true
           go run .
