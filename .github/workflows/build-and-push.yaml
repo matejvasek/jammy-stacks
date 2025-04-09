@@ -1,0 +1,27 @@
+name: Build and Publish Jammy Stacks
+
+on:
+  pull_request:
+    branches: [ 'main' ]
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  build-and-push:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: "ubuntu-24.04-arm"
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      - name: Build and Push
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          skopeo --version || true
+          go run .
