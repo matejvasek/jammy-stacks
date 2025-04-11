@@ -214,7 +214,7 @@ func patchStack(stackTomlPath string) error {
 	}
 
 	m := data.(map[string]any)
-	m["platforms"] = []string{"linux/arm64"}
+	m["platforms"] = []string{"linux/amd64", "linux/arm64"}
 
 	args := map[string]interface{}{
 		"args": map[string]interface{}{
